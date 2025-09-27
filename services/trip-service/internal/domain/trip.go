@@ -10,7 +10,7 @@ type TripModel struct {
 	ID       primitive.ObjectID
 	UserId   string
 	Status   string
-	RideFare RideFareModel
+	RideFare *RideFareModel
 }
 
 type TripRepository interface {
