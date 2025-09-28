@@ -1,17 +1,29 @@
 package main
 
 import (
-	"time"
+	"log"
+	"net/http"
 
+	h "github.com/Minhajxdd/Synch/services/trip-service/internal/infrastructure/http"
 	"github.com/Minhajxdd/Synch/services/trip-service/internal/infrastructure/repository"
 	"github.com/Minhajxdd/Synch/services/trip-service/internal/service"
 )
 
 func main() {
 	inMemRepo := repository.NewInmemRepository()
-	_ = service.NewService(inMemRepo)
+	svc := service.NewService(inMemRepo)
+	mux := http.NewServeMux()
 
-	for {
-		time.Sleep(time.Second)
+	httphandler := h.HttpHandler{Service: svc}
+
+	mux.HandleFunc("POST /preview", httphandler.HandleTripPreview)
+
+	server := &http.Server{
+		Addr:    ":8083",
+		Handler: mux,
+	}
+
+	if err := server.ListenAndServe(); err != nil {
+		log.Printf("HTTP server error: %v", err)
 	}
 }
