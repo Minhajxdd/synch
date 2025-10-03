@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/Minhajxdd/Synch/services/trip-service/internal/infrastructure/grpc"
 	"github.com/Minhajxdd/Synch/services/trip-service/internal/infrastructure/repository"
 	"github.com/Minhajxdd/Synch/services/trip-service/internal/service"
 	grpcserver "google.golang.org/grpc"
@@ -32,12 +33,14 @@ func main() {
 
 	lis, err := net.Listen("tcp", GrpcAddr)
 	if err != nil {
-		log.Fatal("failed to listen %v", err)
+		log.Fatalf("failed to listen %v", err)
 	}
 
 	grpcServer := grpcserver.NewServer()
 
-	log.Println("starting grpc server on port %s", lis.Addr().String())
+	grpc.NewGrpcHandler(grpcServer, svc)
+
+	log.Printf("starting grpc server on port %s", lis.Addr().String())
 
 	go func() {
 		if err := grpcServer.Serve(lis); err != nil {
